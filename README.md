@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NASA Explorer
 
-## Getting Started
+An editorial experience exploring NASA's imagery and data — built as a cinematic, opinionated website, not a dashboard.
 
-First, run the development server:
+**[nasa-explorer-beta.vercel.app](https://nasa-explorer-beta.vercel.app/)**
+
+---
+
+## Pages
+
+- **Home** — Astronomy Picture of the Day as a full-bleed hero with parallax
+- **Gallery** — APOD archive browser with date range selection
+- **Mars** — Curiosity & Perseverance rover photos, filterable by camera and sol
+- **Asteroids** — Near Earth Objects feed with approach data visualization
+
+## Stack
+
+| Layer | Tech |
+|-------|------|
+| Framework | Next.js 15 (App Router) + TypeScript |
+| Styling | Tailwind CSS 4 + shadcn/ui |
+| Data | TanStack React Query + NASA Open API |
+| Animation | Framer Motion |
+| Dates | date-fns |
+| Package manager | pnpm |
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Add your NASA API key (get one at https://api.nasa.gov)
+cp .env.example .env.local
+# Then edit .env.local and set NASA_API_KEY
+
+# Run dev server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm dev        # Start dev server
+pnpm build      # Production build
+pnpm lint       # ESLint
+pnpm typecheck  # tsc --noEmit
+```
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/              # Pages & API routes
+│   ├── page.tsx      # Home (APOD hero)
+│   ├── gallery/      # APOD archive
+│   ├── mars/         # Rover photos
+│   └── asteroids/    # NEO feed
+├── components/
+│   ├── ui/           # shadcn primitives
+│   ├── layout/       # Navigation, QueryProvider
+│   └── sections/     # Page-specific sections
+├── hooks/
+├── lib/
+│   ├── api/          # NASA API client & query fns
+│   ├── utils/        # Date helpers
+│   ├── motion.ts     # Framer Motion variants & easing
+│   └── constants.ts
+├── types/
+│   └── nasa.ts
+└── styles/
+    └── globals.css   # CSS variables, fonts
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
