@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import type { ApodResponse } from "@/types/nasa"
 import { formatDisplayDate } from "@/lib/utils/date"
 import { EASE_OUT_EXPO, EASE_OUT_QUART } from "@/lib/motion"
@@ -49,7 +49,9 @@ const getEmbedUrl = (url: string): string => {
 
 export const ApodHero = ({ apod }: ApodHeroProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLParagraphElement>(null)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [collapsedHeight, setCollapsedHeight] = useState<number | null>(null)
 
   const isVideoMedia = apod.media_type === "video"
 
@@ -61,6 +63,16 @@ export const ApodHero = ({ apod }: ApodHeroProps) => {
   const imageY = useTransform(scrollYProgress, [0, 1], [0, PARALLAX_DISTANCE])
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08])
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3])
+
+  /* Measure collapsed height from actual line-height */
+  useEffect(() => {
+    const el = textRef.current
+    if (!el) return
+    const lineHeight = parseFloat(getComputedStyle(el).lineHeight)
+    setCollapsedHeight(Math.ceil(lineHeight * CLAMP_LINES))
+  }, [])
+
+  const isAnimationReady = collapsedHeight !== null
 
   /* Determine video rendering strategy */
   const isDirectVideo = isVideoMedia && isDirectVideoUrl(apod.url)
@@ -195,7 +207,7 @@ export const ApodHero = ({ apod }: ApodHeroProps) => {
             {apod.title}
           </motion.h1>
 
-          {/* Explanation — expandable */}
+          {/* Explanation — expandable with smooth height animation */}
           <motion.div
             className="mb-6"
             initial={{ opacity: 0, y: 8 }}
@@ -206,28 +218,46 @@ export const ApodHero = ({ apod }: ApodHeroProps) => {
               ease: EASE_OUT_EXPO,
             }}
           >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.p
-                key={isExpanded ? "expanded" : "collapsed"}
+            <motion.div
+              className="relative overflow-hidden"
+              initial={false}
+              animate={
+                isAnimationReady
+                  ? { height: isExpanded ? "auto" : collapsedHeight }
+                  : {}
+              }
+              transition={{ duration: 0.5, ease: EASE_OUT_EXPO }}
+            >
+              <p
+                ref={textRef}
                 className="body-base text-text-secondary"
                 style={
-                  isExpanded
-                    ? {}
-                    : {
+                  !isAnimationReady && !isExpanded
+                    ? {
                         display: "-webkit-box",
                         WebkitLineClamp: CLAMP_LINES,
                         WebkitBoxOrient: "vertical",
                         overflow: "hidden",
                       }
+                    : undefined
                 }
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, ease: EASE_OUT_QUART }}
               >
                 {apod.explanation}
-              </motion.p>
-            </AnimatePresence>
+              </p>
+
+              {/* Fade-out gradient when collapsed */}
+              <motion.div
+                className="pointer-events-none absolute bottom-0 left-0 right-0 h-8"
+                initial={false}
+                animate={{ opacity: isExpanded ? 0 : 1 }}
+                transition={{ duration: 0.4, ease: EASE_OUT_QUART }}
+                style={{
+                  background:
+                    "linear-gradient(to top, var(--background), transparent)",
+                }}
+                aria-hidden="true"
+              />
+            </motion.div>
 
             <button
               onClick={() => setIsExpanded((prev) => !prev)}
