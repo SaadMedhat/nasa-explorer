@@ -18,7 +18,7 @@ export const Navigation = () => {
       {/* Gradient fade for seamless blending with content */}
       <div className="pointer-events-none absolute inset-0 h-32 bg-gradient-to-b from-background/80 via-background/40 to-transparent" />
 
-      <div className="relative flex items-center justify-between px-6 py-5 md:px-10 lg:px-16">
+      <div className="relative flex items-start justify-between gap-4 px-6 py-5 md:items-center md:px-10 lg:px-16">
         {/* Logo / Site title */}
         <Link
           href="/"
@@ -29,7 +29,7 @@ export const Navigation = () => {
         </Link>
 
         {/* Nav links — horizontal, responsive spacing */}
-        <ul className="flex items-center gap-0 sm:gap-1">
+        <ul className="flex flex-wrap items-center justify-end gap-0 sm:gap-1">
           {NAV_ITEMS.map(({ href, label }) => {
             const isActive =
               href === "/"
