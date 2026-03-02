@@ -93,10 +93,11 @@ export const ApodHero = ({ apod }: ApodHeroProps) => {
           style={{ y: imageY, scale: imageScale }}
         >
           <Image
-            src={apod.hdurl ?? apod.url}
+            src={apod.url}
             alt={apod.title}
             fill
             priority
+            quality={80}
             className="object-cover"
             sizes="100vw"
           />
